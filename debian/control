@@ -1,0 +1,23 @@
+Source: sway-audio-idle-inhibit
+Section: unknown
+Priority: optional
+Maintainer: Soumya Ranjan Patnaik <soumyaranjan1812@gmail.com>
+Rules-Requires-Root: no
+Build-Depends:
+ meson,
+ libpulse-dev,
+ build-essential,
+ wayland-protocols,
+ libwayland-dev,
+ debhelper-compat (= 13),
+Standards-Version: 4.6.1
+Homepage: https://github.com/ErikReider/SwayAudioIdleInhibit
+
+Package: sway-audio-idle-inhibit
+Architecture: any
+Depends:
+ ${misc:Depends},
+ libpulse0,
+ wayland-protocols,
+Description: Prevents swayidle from sleeping while 
+ any application is outputting or receiving audio
