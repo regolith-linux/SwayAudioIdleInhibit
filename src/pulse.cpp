@@ -3,10 +3,12 @@
 #include <pulse/context.h>
 #include <pulse/def.h>
 #include <pulse/mainloop-api.h>
+#include <pulse/proplist.h>
 #include <pulse/pulseaudio.h>
 #include <pulse/thread-mainloop.h>
 #include <string.h>
 
+#include <cstring>
 #include <cstdlib>
 #include <iostream>
 
@@ -14,7 +16,8 @@
 
 int Pulse::init(SubscriptionType subscriptionType,
                 pa_subscription_mask_t pa_subscriptionType,
-                EventType eventType) {
+                EventType eventType,
+                char **ignoredSourceOutputs) {
   pa_threaded_mainloop *mainloop = getMainLoop();
   pa_mainloop_api *mainloop_api = getMainLoopApi(mainloop);
   if (pa_threaded_mainloop_start(mainloop)) {
@@ -22,14 +25,14 @@ int Pulse::init(SubscriptionType subscriptionType,
     return 1;
   }
   connect(mainloop, mainloop_api, subscriptionType, pa_subscriptionType,
-          eventType);
+          eventType, ignoredSourceOutputs);
   return 0;
 }
 
 void Pulse::sink_input_info_callback(pa_context *, const pa_sink_input_info *i,
                                      int, void *userdata) {
   Data *data = (Data *)userdata;
-  if (i && !i->corked) data->activeSink = true;
+  if (i && !i->corked && i->client != PA_INVALID_INDEX) data->activeSink = true;
   pa_threaded_mainloop_signal(data->mainloop, 0);
 }
 
@@ -37,7 +40,20 @@ void Pulse::source_output_info_callback(pa_context *,
                                         const pa_source_output_info *i, int,
                                         void *userdata) {
   Data *data = (Data *)userdata;
-  if (i && !i->corked) data->activeSource = true;
+  bool ignoreSourceOutput = false;
+  if (i && i->proplist) {
+    const char *appName = pa_proplist_gets(i->proplist, "application.name");
+    if (appName) {
+      int i = 0;
+      while (data->ignoredSourceOutputs[i] != nullptr) {
+        if (strcmp(appName, data->ignoredSourceOutputs[i]) == 0) {
+          ignoreSourceOutput = true;
+        }
+        i++;
+      }
+    }
+  }
+  if (i && !i->corked && i->client != PA_INVALID_INDEX && !ignoreSourceOutput) data->activeSource = true;
   pa_threaded_mainloop_signal(data->mainloop, 0);
 }
 
@@ -77,10 +93,10 @@ void Pulse::subscribe_callback(pa_context *, pa_subscription_event_type_t type,
   Data *data = (Data *)userdata;
   EventType eventType;
   switch (type & PA_SUBSCRIPTION_EVENT_FACILITY_MASK) {
-    case PA_SUBSCRIPTION_EVENT_SINK:
+    case PA_SUBSCRIPTION_EVENT_SINK_INPUT:
       eventType = EVENT_TYPE_DRY_SINK;
       break;
-    case PA_SUBSCRIPTION_EVENT_SOURCE:
+    case PA_SUBSCRIPTION_EVENT_SOURCE_OUTPUT:
       eventType = EVENT_TYPE_DRY_SOURCE;
       break;
     default:
@@ -155,9 +171,10 @@ void Pulse::connect(pa_threaded_mainloop *mainloop,
                     pa_mainloop_api *mainloop_api,
                     SubscriptionType subscriptionType,
                     pa_subscription_mask_t pa_subscriptionType,
-                    EventType eventType) {
+                    EventType eventType,
+                    char **ignoredSourceOutputs) {
   Data *data = new Data(mainloop, mainloop_api, subscriptionType,
-                        pa_subscriptionType, eventType);
+                        pa_subscriptionType, eventType, ignoredSourceOutputs);
 
   pa_context *context = getContext(mainloop, mainloop_api, data);
 
