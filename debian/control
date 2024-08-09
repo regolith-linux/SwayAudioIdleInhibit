@@ -19,6 +19,6 @@ Depends:
  ${misc:Depends},
  libpulse0,
  wayland-protocols,
- libwlroots11,
+ sway
 Description: Prevents swayidle from sleeping while 
  any application is outputting or receiving audio
