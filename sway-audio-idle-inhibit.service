@@ -1,0 +1,14 @@
+[Unit]
+Description=Prevents system from idling when there's an active audio source or sink
+
+BindsTo=graphical-session.target
+PartOf=graphical-session.target
+After=graphical-session.target
+
+[Service]
+ExecStart=/usr/bin/sway-audio-idle-inhibit
+Restart=on-failure
+RestartSec=5
+
+[Install]
+WantedBy=default.target
