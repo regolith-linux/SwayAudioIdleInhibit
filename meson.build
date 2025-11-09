@@ -51,3 +51,5 @@ executable(
 	],
 	install: true,
 )
+
+install_data('sway-audio-idle-inhibit.service', install_dir : '/usr/lib/systemd/user' )
