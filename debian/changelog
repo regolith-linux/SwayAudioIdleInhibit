@@ -1,3 +1,28 @@
+sway-audio-idle-inhibit (2.0.0) jammy; urgency=medium
+
+  [ Maksym Litvinov ]
+  * Safe handling of ignoredSourceOutputs array
+
+  [ Erik Reider ]
+  * Bumped version to 0.1.2
+  * Added COPR RPM spec file
+  * Added gcc as build dependency
+
+  [ TimaFrolov ]
+  * Move registry_listener from stack into static memory
+
+  [ Erik Reider ]
+  * Added .clang-format file
+  * Use systemd/elogind Inhibit instead of the wayland protocol
+  * Updated build scripts
+  * Bumped version to 0.2.0
+
+  [ Soumya Ranjan Patnaik ]
+  * chore: update dependencies to match v0.2.0
+  * feat: add systemd to handle process execution and failures
+
+ -- Regolith Linux <regolith.linux@gmail.com>  Sun, 16 Nov 2025 17:07:32 +0000
+
 sway-audio-idle-inhibit (0.1.4-1) jammy; urgency=medium
 
   [ Khosrow Moossavi ]
