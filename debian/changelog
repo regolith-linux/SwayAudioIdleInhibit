@@ -1,3 +1,9 @@
+sway-audio-idle-inhibit (2.0.1) jammy; urgency=medium
+
+  * fix: fix target to remove cycle present in ubuntu 26.04 gdm3.  Fixes gdm3 breaking when regolith is installed
+
+ -- Regolith Linux <regolith.linux@gmail.com>  Sat, 25 Apr 2026 13:12:17 -0700
+
 sway-audio-idle-inhibit (2.0.0) jammy; urgency=medium
 
   [ Maksym Litvinov ]
