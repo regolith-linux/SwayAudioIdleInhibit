@@ -1,5 +1,5 @@
 Source: sway-audio-idle-inhibit
-Section: unknown
+Section: sound
 Priority: optional
 Maintainer: Soumya Ranjan Patnaik <soumyaranjan1812@gmail.com>
 Rules-Requires-Root: no
