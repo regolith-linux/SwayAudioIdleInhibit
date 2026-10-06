@@ -1,0 +1,26 @@
+#!/bin/sh
+set -e
+
+# Versions before 2.0.1 installed the user unit with WantedBy=default.target,
+# leaving a global /etc/systemd/user/default.target.wants/ link. Since the unit
+# BindsTo=graphical-session.target, that link starts graphical-session.target in
+# every user manager, including gdm's greeter, which makes gnome-session abort
+# with "A graphical session is already running!" and gdm fail to start.
+# The debhelper snippet below never removes the stale link on upgrade (it falls
+# through to update-state), so move it to graphical-session.target.wants here
+# and resync deb-systemd-helper's state so it records only the new link.
+unit=sway-audio-idle-inhibit.service
+old_link=/etc/systemd/user/default.target.wants/$unit
+new_link=/etc/systemd/user/graphical-session.target.wants/$unit
+state_dir=/var/lib/systemd/deb-systemd-user-helper-enabled
+if [ "$1" = "configure" ] && [ -z "$DPKG_ROOT" ] && [ -n "$2" ] && \
+   dpkg --compare-versions "$2" lt-nl 2.0.2 && [ -L "$old_link" ]; then
+	mkdir -p "$(dirname "$new_link")"
+	ln -sf "/usr/lib/systemd/user/$unit" "$new_link"
+	rm -f "$old_link" "$state_dir/default.target.wants/$unit"
+	deb-systemd-helper --user update-state "$unit" >/dev/null || true
+fi
+
+#DEBHELPER#
+
+exit 0

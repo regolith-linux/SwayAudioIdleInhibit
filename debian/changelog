@@ -1,3 +1,11 @@
+sway-audio-idle-inhibit (2.0.2) jammy; urgency=medium
+
+  * fix: remove stale default.target.wants link left by versions before 2.0.1
+    on upgrade. It started graphical-session.target in gdm's greeter session,
+    preventing gdm3 from starting on Ubuntu 26.04.
+
+ -- Regolith Linux <regolith.linux@gmail.com>  Tue, 06 Oct 2026 08:54:38 -0700
+
 sway-audio-idle-inhibit (2.0.1) jammy; urgency=medium
 
   * fix: fix target to remove cycle present in ubuntu 26.04 gdm3.  Fixes gdm3 breaking when regolith is installed
