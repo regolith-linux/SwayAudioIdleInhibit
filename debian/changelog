@@ -1,3 +1,10 @@
+sway-audio-idle-inhibit (2.0.3) jammy; urgency=medium
+
+  * fix: run only in the Regolith Wayland session, not in the X11 session,
+    GNOME sessions or the login screen
+
+ -- Regolith Linux <regolith.linux@gmail.com>  Tue, 27 Oct 2026 12:00:00 -0700
+
 sway-audio-idle-inhibit (2.0.2) jammy; urgency=medium
 
   * fix: remove stale default.target.wants link left by versions before 2.0.1
